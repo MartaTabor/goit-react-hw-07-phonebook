@@ -18,8 +18,18 @@ export const fetchContacts = createAsyncThunk(
 export const addContact = createAsyncThunk(
   'contacts/addContact',
   async ({ name, phone }, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const existingContact = state.contacts.contacts.find(
+      contact => contact.name.toLowerCase() === name.trim().toLowerCase()
+    );
+    if (existingContact) {
+      return thunkAPI.rejectWithValue(`${name} is already in contacts!`);
+    }
     try {
-      const response = await axios.post('/contacts', { name, phone });
+      const response = await axios.post('/contacts', {
+        name,
+        phone,
+      });
       return response.data;
     } catch (e) {
       return thunkAPI.rejectWithValue(e.message);

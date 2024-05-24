@@ -15,6 +15,7 @@ const handlePending = state => {
 const handleRejected = (state, action) => {
   state.isLoading = false;
   state.error = action.payload;
+  alert(action.payload);
 };
 
 const contactsSlice = createSlice({
@@ -35,15 +36,7 @@ const contactsSlice = createSlice({
       .addCase(addContact.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        const { name, phone } = action.payload;
-        const isExist = state.contacts.some(
-          contact => contact.name.toLowerCase() === name.trim().toLowerCase()
-        );
-        if (isExist) {
-          alert(`${name} is already in contacts!`);
-        } else {
-          state.contacts.push({ name, phone });
-        }
+        state.contacts.push(action.payload);
       })
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.isLoading = false;
