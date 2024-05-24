@@ -1,25 +1,24 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import css from './ContactForm.module.css';
 
 export const ContactForm = ({ onSubmit }) => {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
   const handleChange = event => {
     const { name, value } = event.target;
     if (name === 'name') {
       setName(value);
-    } else if (name === 'number') {
-      setNumber(value);
+    } else if (name === 'phone') {
+      setPhone(value);
     }
   };
 
   const handleSubmit = event => {
     event.preventDefault();
-    onSubmit(name, number);
+    onSubmit(name, phone);
     setName('');
-    setNumber('');
+    setPhone('');
   };
 
   return (
@@ -45,8 +44,8 @@ export const ContactForm = ({ onSubmit }) => {
         className={css.input}
         id="phoneField"
         type="tel"
-        name="number"
-        value={number}
+        name="phone"
+        value={phone}
         onChange={handleChange}
         placeholder="Phone Number"
         pattern="\+?\d{1,4}?[ .\\-\\s]?\(?\d{1,3}?\)?[ .\\-\\s]?\d{1,4}[ .\\-\\s]?\d{1,4}[ .\\-\\s]?\d{1,9}"
@@ -57,8 +56,4 @@ export const ContactForm = ({ onSubmit }) => {
       </button>
     </form>
   );
-};
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };

@@ -21,7 +21,7 @@ const ContactsList = ({ contacts, filter, onDelete }) => {
             {filteredContacts.map(contact => (
               <tr className={css.tbody} key={contact.id}>
                 <td className={css.name}>{contact.name}: </td>
-                <td>{contact.number}</td>
+                <td>{contact.phone}</td>
                 <td>
                   <button
                     className={css.button}

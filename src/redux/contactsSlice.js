@@ -1,47 +1,61 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { nanoid } from 'nanoid';
+import { fetchContacts, addContact, deleteContact } from './operations';
 
 const initialState = {
   contacts: [],
   filter: '',
+  isLoading: false,
+  error: null,
+};
+
+const handlePending = state => {
+  state.isLoading = true;
+};
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
 };
 
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
   reducers: {
-    addContact: {
-      reducer(state, action) {
-        const { name, number } = action.payload;
+    setFilter(state, action) {
+      state.filter = action.payload;
+    },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchContacts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.contacts = action.payload;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        const { name, phone } = action.payload;
         const isExist = state.contacts.some(
           contact => contact.name.toLowerCase() === name.trim().toLowerCase()
         );
         if (isExist) {
           alert(`${name} is already in contacts!`);
         } else {
-          state.contacts.push({ id: nanoid(), name, number });
+          state.contacts.push({ name, phone });
         }
-      },
-      prepare(name, number) {
-        return {
-          payload: {
-            name,
-            number,
-          },
-        };
-      },
-    },
-    deleteContact(state, action) {
-      const index = state.contacts.findIndex(
-        contact => contact.id === action.payload
-      );
-      state.contacts.splice(index, 1);
-    },
-    setFilter(state, action) {
-      state.filter = action.payload;
-    },
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.contacts = state.contacts.filter(
+          contact => contact.id !== action.payload.id
+        );
+      })
+      .addMatcher(action => action.type.endsWith('/pending'), handlePending)
+      .addMatcher(action => action.type.endsWith('/rejected'), handleRejected);
   },
 });
 
-export const { addContact, deleteContact, setFilter } = contactsSlice.actions;
-export default contactsSlice.reducer;
+export const { setFilter } = contactsSlice.actions;
+export const contactsReducer = contactsSlice.reducer;
